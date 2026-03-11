@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct TimelineView: UIViewControllerRepresentable {
-    let flights: [String]
+    let flights: [FlightInformation]
     
     //  После того, как создаём метод - убираем слово some и устанавливаем ViewController, который хотим получить. После этого вызываем метод updateUIViewController
     func makeUIViewController(context: Context) -> UITableViewController {
@@ -26,9 +26,9 @@ struct TimelineView: UIViewControllerRepresentable {
 
 extension TimelineView {
     final class Coordinator: NSObject, UITableViewDataSource {
-        var flights: [String]
+        let flights: [FlightInformation]
         
-        init(flights: [String]) {
+        init(flights: [FlightInformation]) {
             self.flights = flights
         }
         
@@ -37,16 +37,40 @@ extension TimelineView {
         }
         
         func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+            let dateFormatter = DateFormatter()
+            dateFormatter.timeStyle = .short
+            dateFormatter.dateStyle = .none
+            
             let flight = flights[indexPath.row]
+            //  Запланированные рейсы
+            let scheduledString = dateFormatter.string(from: flight.scheduledTime)
+            //  Текущие рейсы
+            let currentString = dateFormatter.string(from: flight.currentTime ?? flight.scheduledTime)
             let cell = tableView.dequeueReusableCell(withIdentifier: "TimelineTableViewCell", for: indexPath) as! TimelineTableViewCell
-            cell.descriptionLabel.text = flight
+            
+            var flightInfo = "\(flight.airline) \(flight.number)"
+            flightInfo += "\(flight.direction == .departure ? "to" : "from")"
+            flightInfo += "\(flight.otherAirport) - \(flight.flightStatus)"
+            
+            cell.descriptionLabel.text = flightInfo
+            cell.titleLabel.text = "On time for \(scheduledString)"
+            
+            if flight.status == .cancelled {
+                cell.titleLabel.text = "Cancelled"
+            } else if flight.timeDifference != 0, flight.status == .cancelled {
+                cell.titleLabel.text = "Cancelled"
+            } else if flight.timeDifference != 0 {
+                cell.titleLabel.text = "\(scheduledString) Now: \(currentString)"
+            }
+            
+            cell.titleLabel.textColor = .black
+            cell.bubbleColor = flight.timelineColor
+            
             return cell
         }
-        
-        
     }
 }
 
 #Preview {
-    TimelineView(flights: ["London - Berlin", "Los Angeles - New York"])
+    TimelineView(flights: FlightInformation.generateFlights())
 }

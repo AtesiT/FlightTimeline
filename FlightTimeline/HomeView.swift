@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct HomeScreen: View {
+struct HomeView: View {
     //  Во flights будет находится сгенерированный массив
     private let flights = FlightInformation.generateFlights()
     
@@ -14,5 +14,5 @@ struct HomeScreen: View {
 }
 
 #Preview {
-    HomeScreen()
+    HomeView()
 }

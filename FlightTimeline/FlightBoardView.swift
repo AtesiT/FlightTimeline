@@ -15,7 +15,10 @@ struct FlightBoardView: View {
         List(showFlights)
             //  Создавая представление, мы должны присвоить уникальный ID. В нашем случае, у нас массив с уникальными элементами, не повторяются. Затем, ниже будет блок замыкания, на основе которых, мы будет создавать эти представления
             { flight in
-                FlightRowView(flight: flight)
+                NavigationLink(destination: FlightDetailsView(flight: flight)) {
+                    FlightRowView(flight: flight)
+                    //  У строк появятся стрелки, которые покажут пользователю, что можно будет совершить переход
+                }
             }
             .listStyle(.plain)
             .navigationTitle(title)

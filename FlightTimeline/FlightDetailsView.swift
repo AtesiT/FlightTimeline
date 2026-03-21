@@ -3,8 +3,6 @@ import SwiftUI
 struct FlightDetailsView: View {
     let flight: FlightInformation
     
-    @Binding var isPresented: Bool
-    
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             //  Добавляем HStack и Spacer ниже, чтобы сместить влево текст
@@ -12,10 +10,6 @@ struct FlightDetailsView: View {
                 Text("\(flight.airline) - Flight \(flight.number)")
                     .font(.title)
                 Spacer()
-                
-                Button("Done") {
-                    isPresented.toggle()
-                }
             }
             
             Text("\(flight.direction == .arrival ? "From" : "To") \(flight.otherAirport)")
@@ -29,9 +23,10 @@ struct FlightDetailsView: View {
         }
         .padding()
         .font(.headline)
+        .navigationTitle("Flight Details")
     }
 }
 
 #Preview {
-    FlightDetailsView(flight: FlightInformation.generateFlight(), isPresented: .constant(true))
+    FlightDetailsView(flight: FlightInformation.generateFlight())
 }
